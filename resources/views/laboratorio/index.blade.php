@@ -1,0 +1,9 @@
+@extends('layouts.app')
+@section('title', 'Laboratorio')
+@section('content')
+    <x-page-heading title="Laboratorio" description="Consulta las órdenes de análisis y el estado de sus resultados." />
+    <form class="filters" method="GET" action="{{ route('laboratorio.index') }}"><div class="filter-grid"><x-field name="estado" label="Estado de la orden" type="select" :options="['Pendiente' => 'Pendiente', 'En proceso' => 'En proceso', 'Completada' => 'Completada', 'Cancelada' => 'Cancelada']" :value="request('estado')" /><div class="filter-actions"><button class="button button-primary" type="submit"><x-icon name="search" />Filtrar</button><a class="button" href="{{ route('laboratorio.index') }}">Limpiar</a></div></div></form>
+    <div class="table-panel">
+        @if($orders->count())<div class="table-scroll" role="region" aria-label="Órdenes de laboratorio" tabindex="0"><table><caption class="sr-only">Órdenes de laboratorio</caption><thead><tr><th scope="col">Orden</th><th scope="col">Paciente</th><th scope="col">Médico solicitante</th><th scope="col">Fecha de solicitud</th><th scope="col">Estado</th><th scope="col">Acciones</th></tr></thead><tbody>@foreach($orders as $order)<tr><td class="text-strong">#{{ $order->id }}</td><td>{{ $order->paciente }}</td><td>{{ $order->medico }}</td><td class="cell-date">{{ \Illuminate\Support\Carbon::parse($order->fecha_solicitud)->format('d/m/Y · H:i') }}</td><td><x-status :value="$order->estado" /></td><td class="cell-actions"><a class="button button-small" href="{{ route('laboratorio.show', ['orden' => $order->id]) }}" aria-label="Ver orden {{ $order->id }}"><x-icon name="arrow-right" />Ver orden</a></td></tr>@endforeach</tbody></table></div>{{ $orders->withQueryString()->links('pagination.default') }}@else<x-empty-state title="No hay órdenes de laboratorio" message="Las solicitudes de análisis aparecerán aquí cuando sean registradas." icon="flask" />@endif
+    </div>
+@endsection
