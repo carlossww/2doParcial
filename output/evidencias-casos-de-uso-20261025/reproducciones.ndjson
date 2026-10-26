@@ -1,0 +1,4 @@
+{"escenario":"CU18 búsqueda de horarios","base":"Parcial2_test","sin_filtro":200,"busqueda_por_hora":200,"busqueda_por_medico":200,"filas_al_buscar_medico_existente":0}
+{"escenario":"CU3 edición de cuenta de paciente sin cambiar sus datos","base":"Parcial2_test","estado_http":302,"vinculo_antes":true,"vinculo_despues":false,"verificacion_despues":false}
+{"escenario":"Prerrequisito CU17 creación de cuenta de paciente desde Usuarios","base":"Parcial2_test","campo_vinculo_en_formulario":false,"cuenta_creada":true,"vinculo_verificado_creado":false}
+{"escenario":"Rutas de módulos pendientes","base":"Parcial2_test","resultados":{"/agenda":404,"/historia":404,"/atencion/1":404,"/laboratorio/ordenes":404,"/portal/reservar":404,"/reportes":404}}

@@ -7,6 +7,7 @@ use App\Http\Requests\LoginRequest;
 use App\Models\User;
 use App\Modules\Shared\Clinic;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -43,11 +44,34 @@ class AuthController extends Controller
         return redirect()->intended(route('home'));
     }
 
-    public function logout(Request $request): RedirectResponse
+    public function confirmLogout(): View
     {
+        return view('auth.logout-confirm');
+    }
+
+    public function logout(Request $request): RedirectResponse|JsonResponse
+    {
+        $user = $request->user();
+        // La exclusión durable evita duplicar la salida aun si un reintento llega
+        // con autenticación antigua después de vencer el bloqueo de sesión.
+        $operationKey = 'logout:'.hash('sha256', $request->session()->getId());
+        Clinic::transaction($user, fn () => DB::table('bitacora')->insertOrIgnore([
+            'usuario_id' => $user->id,
+            'accion' => 'SALIDA',
+            'entidad' => 'usuario',
+            'registro_id' => $user->id,
+            'descripcion' => 'Cierre de sesión',
+            'direccion_ip' => $request->ip(),
+            'clave_operacion' => $operationKey,
+        ]));
+
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
+        if ($request->expectsJson()) {
+            return response()->json(['redirect' => route('login')]);
+        }
 
         return redirect()->route('login');
     }

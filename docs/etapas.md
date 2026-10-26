@@ -1,5 +1,7 @@
 # Etapas de construcción
 
+> Documento histórico de una integración anterior. Sus afirmaciones de reserva, atención, laboratorio, portal y reportes no describen los módulos web presentes en esta copia. Después del primer plan de corrección se completaron las [brechas de CU3/CU5/CU6/CU18](correccion_casos_parciales.md), incluida la consulta de agenda. Consultar [aceptacion.md](aceptacion.md) para evidencia vigente y [el plan pendiente](plan_implementacion_casos_pendientes.md) para el trabajo restante.
+
 La implementación se organizó en módulos dentro de `app/Modules`, conservando la estructura de entrada, configuración y almacenamiento de Laravel.
 
 | Etapa | Entrega | Verificación realizada |

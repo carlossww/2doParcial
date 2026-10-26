@@ -33,3 +33,6 @@ Thumbs.db
 /storage/backups/
 
 /.runtime/
+
+/Microsoft/
+/tmp/
