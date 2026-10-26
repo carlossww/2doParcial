@@ -44,7 +44,7 @@ class RolePermissionSeeder extends Seeder
             $roles = [
                 'Administrador' => ['usuarios.gestionar', 'roles.gestionar', 'pacientes.gestionar', 'citas.gestionar', 'agenda.consultar', 'medicos.gestionar', 'especialidades.gestionar',
                     'horarios.gestionar', 'analisis.gestionar', 'reportes.administrativos', 'bitacora.consultar'],
-                'Recepcionista' => ['pacientes.gestionar', 'citas.gestionar', 'agenda.consultar', 'reportes.administrativos'],
+                'Recepcionista' => ['pacientes.gestionar', 'medicos.gestionar', 'especialidades.gestionar', 'citas.gestionar', 'agenda.consultar', 'reportes.administrativos'],
                 'Medico' => ['agenda.consultar', 'atencion.registrar', 'historia.consultar', 'laboratorio.solicitar', 'laboratorio.consultar', 'reportes.clinicos'],
                 'Laboratorista' => ['laboratorio.consultar', 'laboratorio.procesar', 'reportes.laboratorio'],
                 'Paciente' => ['citas.propias', 'perfil.propio'],

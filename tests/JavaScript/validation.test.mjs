@@ -55,6 +55,24 @@ test('rechaza horas invertidas o franjas incompletas y admite inicio desplazado'
     assert.deepEqual(validateRelations({ hora_inicio: '09:15', hora_fin: '10:15' }), {});
 });
 
+for (const duration of [15, 30, 45, 60]) {
+    test(`valida bloques completos de ${duration} minutos desde el inicio de la franja`, () => {
+        assert.deepEqual(validateRelations({ hora_inicio: '09:15', hora_fin: '12:15', duracion_minutos: String(duration) }), {});
+        assert.match(validateRelations({ hora_inicio: '09:15', hora_fin: '09:35', duracion_minutos: String(duration) }).hora_fin, new RegExp(`${duration} minutos`));
+    });
+}
+
+test('rechaza una duración no permitida y no usa silenciosamente el valor por defecto', () => {
+    for (const duration of ['20', '0', '', 'abc', '30.5']) {
+        assert.match(validateRelations({ hora_inicio: '09:00', hora_fin: '12:00', duracion_minutos: duration }).duracion_minutos, /15, 30, 45 o 60/);
+    }
+});
+
+test('admite una franja de 45 minutos configurada con bloques de 15 o 45', () => {
+    assert.deepEqual(validateRelations({ hora_inicio: '09:00', hora_fin: '09:45', duracion_minutos: '15' }), {});
+    assert.deepEqual(validateRelations({ hora_inicio: '09:00', hora_fin: '09:45', duracion_minutos: '45' }), {});
+});
+
 test('rechaza rangos invertidos y permite fechas iguales y finales opcionales', () => {
     assert.match(validateRelations({ fecha_inicio: '2026-10-24', fecha_fin: '2026-10-23' }).fecha_fin, /anterior/);
     assert.match(validateRelations({ desde: '2026-10-24', hasta: '2026-10-23' }).hasta, /anterior/);

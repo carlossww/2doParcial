@@ -1,5 +1,9 @@
 # Esquema de Vida Salud
 
+**Estado de esta revisión:** se ejecutó el plan de corrección. Las estructuras de portal, atención y laboratorio descritas aquí existen en la base, pero sus módulos web siguen pendientes. Las reglas vigentes de la entrega se detallan en [decisiones.md](decisiones.md).
+
+La corrección posterior de CU3/CU5/CU6/CU18 utiliza las columnas existentes para conservar y administrar el vínculo con paciente y consultar citas. No añade migraciones ni cambia el esquema. La consulta de agenda está habilitada; la reserva y sus modificaciones web siguen pendientes.
+
 Las migraciones requieren PostgreSQL 18 y utilizan el esquema `vida_salud`. El dump original `database/vida_salud_existing.sql` se conserva intacto. No ejecutar `migrate:fresh`, `db:wipe` ni restauraciones destructivas sobre una base con datos reales.
 
 ## Migraciones
@@ -10,6 +14,10 @@ Las migraciones requieren PostgreSQL 18 y utilizan el esquema `vida_salud`. El d
 
 4. `create_patient_portal_requests`: crea `solicitud_portal`, la cola persistente de solicitudes pendientes de verificación. Las cuentas nuevas quedan inactivas y sin vínculo; recepción verifica identidad y coincidencia de CI/fecha de nacimiento antes de habilitarlas.
 5. `correct_laboratory_publication_audit`: separa la validación de correcciones de la publicación, exige al médico solicitante como actor de publicación y conserva su identidad en auditoría.
+
+6. `2026_10_25_000001_grant_reception_directory_permissions`: agrega a recepción únicamente los permisos de gestión de médicos y especialidades cuando el rol ya existe. No reemplaza otros permisos; su reversión no retira asignaciones. En base vacía los asigna el seeder actualizado.
+7. `2026_10_25_000002_configure_appointment_duration`: incorpora duración por horario y cita, adapta las funciones heredadas y conserva los finales de los nuevos eventos. Protege la reversión cuando ya existen duraciones distintas de 30 o eventos con finales explícitos.
+8. `2026_10_25_000003_make_logout_audit_idempotent`: incorpora una clave nullable única para impedir auditorías de salida duplicadas. No admite revertirse si existen claves registradas.
 
 Configurar `DB_CONNECTION=pgsql` y `DB_SCHEMA=vida_salud,public`. Las tablas de infraestructura se pueden resolver con ese `search_path` o mediante nombres calificados en la configuración. Laravel crea su propia tabla `migrations` en el primer esquema disponible; no pertenece al dump clínico.
 
@@ -23,6 +31,11 @@ Configurar `DB_CONNECTION=pgsql` y `DB_SCHEMA=vida_salud,public`. Las tablas de 
 | `cita` | `codigo` | `varchar(30)`, único, generado siempre y almacenado: `VS-00000001` |
 | `resultado_laboratorio` | `publicado_por` | `bigint`, nullable, FK a `usuario.id` |
 | `resultado_laboratorio` | `publicado_en` | `timestamptz`, nullable |
+| `horario` | `duracion_minutos` | `smallint`, NOT NULL, default 30, valores 15/30/45/60 |
+| `cita` | `duracion_minutos` | `smallint`, NOT NULL, default 30 para filas anteriores; snapshot de la duración reservada |
+| `evento_cita` | `fin_anterior` | `timestamptz`, nullable para eventos anteriores o creación |
+| `evento_cita` | `fin_nuevo` | `timestamptz`, nullable para eventos anteriores |
+| `bitacora` | `clave_operacion` | `varchar(80)`, nullable, único; se deriva en servidor para el cierre de sesión |
 
 Las tres columnas de vínculo de paciente deben estar todas vacías o todas completas. Solo el rol `Paciente` admite ese vínculo; una cuenta vinculada a `medico` debe conservar el rol `Medico` y no puede vincularse a un paciente. El verificador puede ser cualquier usuario válido; el backend debe autorizar quién realiza la verificación. Una cuenta `Paciente` puede permanecer sin verificar, con los tres campos vacíos.
 
@@ -31,6 +44,8 @@ Las tres columnas de vínculo de paciente deben estar todas vacías o todas comp
 Los campos de publicación deben estar ambos vacíos o ambos completos. El backend autoriza y publica los resultados. Cambiar `resultado`, `observaciones` o `archivo_referencia` retira automáticamente la publicación mediante un trigger BEFORE UPDATE. Las actualizaciones que solo publican, cambian metadatos o guardan los mismos valores mantienen la publicación y no crean versiones. La función original de versiones se ajusta para registrar únicamente cambios clínicos, conservando el autor anterior y el nuevo autor de la corrección. La reversión restaura desde el dump las definiciones exactas de `auditar_cambio` y `versionar_resultado`.
 
 La exclusión GiST evita intervalos solapados de un mismo paciente para estados `Programada`, `Confirmada` y `Atendida`. Los intervalos son `[inicio, fin)`, por lo que las citas consecutivas son válidas. Se mantiene la exclusión original por médico.
+
+El check de `cita.fin` usa su `duracion_minutos`; los triggers derivan ambos valores desde la franja activa en INSERT y reprogramación. `horarios_disponibles`, `agendar_cita` y `reprogramar_cita` conservan firmas compatibles. Las franjas deben contener un número entero de bloques y no pueden cambiar de duración si afectan citas futuras pendientes. Los eventos históricos no se actualizan; su final puede inferirse de los 30 minutos que regían antes de esta migración.
 
 Se rechaza desactivar pacientes, médicos, especialidades, asociaciones médico/especialidad, cuentas de médico o roles de médico con citas futuras `Programada`/`Confirmada`. También se impide cambiar el rol de una cuenta de médico con esas citas. Los triggers de reserva toman bloqueos sobre la disponibilidad implicada para coordinar reservas con desactivaciones concurrentes.
 
@@ -45,7 +60,7 @@ El backend debe establecer, dentro de su transacción, `set_config('app.usuario_
 | Rol | Permisos predeterminados |
 | --- | --- |
 | Administrador | Usuarios, roles, pacientes, citas, agenda, médicos, especialidades, horarios, catálogo de análisis, reportes administrativos y bitácora; sin acceso clínico automático |
-| Recepcionista | Pacientes, citas, agenda y reportes administrativos |
+| Recepcionista | Pacientes, médicos, especialidades, citas, agenda y reportes administrativos |
 | Medico | Agenda, atención, historia, solicitud/consulta de laboratorio y reportes clínicos |
 | Laboratorista | Consulta/procesamiento de laboratorio y reportes de laboratorio |
 | Paciente | `citas.propias`, `perfil.propio` |

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Tests\Feature\UseCaseReviewProbeTest" file="C:\Users\USUARIO\Downloads\1\Sistema_Gestion_Clinica-main\output\evidencias-casos-de-uso-20261025\UseCaseReviewProbeTest.php" tests="4" assertions="24" errors="0" failures="0" skipped="0" time="1.669163">
+    <testcase name="test_probe_schedule_search_accepts_times_but_does_not_search_doctor_names" file="C:\Users\USUARIO\Downloads\1\Sistema_Gestion_Clinica-main\output\evidencias-casos-de-uso-20261025\UseCaseReviewProbeTest.php" line="24" class="Tests\Feature\UseCaseReviewProbeTest" classname="Tests.Feature.UseCaseReviewProbeTest" assertions="4" time="0.992848"/>
+    <testcase name="test_probe_editing_patient_account_removes_its_verified_link" file="C:\Users\USUARIO\Downloads\1\Sistema_Gestion_Clinica-main\output\evidencias-casos-de-uso-20261025\UseCaseReviewProbeTest.php" line="41" class="Tests\Feature\UseCaseReviewProbeTest" classname="Tests.Feature.UseCaseReviewProbeTest" assertions="9" time="0.350853"/>
+    <testcase name="test_probe_patient_account_creation_form_has_no_patient_link_field" file="C:\Users\USUARIO\Downloads\1\Sistema_Gestion_Clinica-main\output\evidencias-casos-de-uso-20261025\UseCaseReviewProbeTest.php" line="72" class="Tests\Feature\UseCaseReviewProbeTest" classname="Tests.Feature.UseCaseReviewProbeTest" assertions="5" time="0.166385"/>
+    <testcase name="test_probe_pending_modules_have_no_web_routes" file="C:\Users\USUARIO\Downloads\1\Sistema_Gestion_Clinica-main\output\evidencias-casos-de-uso-20261025\UseCaseReviewProbeTest.php" line="97" class="Tests\Feature\UseCaseReviewProbeTest" classname="Tests.Feature.UseCaseReviewProbeTest" assertions="6" time="0.159077"/>
+  </testsuite>
+</testsuites>

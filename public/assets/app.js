@@ -1,4 +1,5 @@
 import { validateField, validateRelations } from './validation.js';
+import { bindLogoutForm } from './logout.js';
 
 (() => {
     'use strict';
@@ -16,6 +17,7 @@ import { validateField, validateRelations } from './validation.js';
     });
 
     document.querySelector('[data-validation-summary]')?.focus();
+    document.querySelectorAll('form[data-logout-form]').forEach((form) => bindLogoutForm(form));
 
     /**
      * Se activa progresivamente: sin JavaScript permanecen las restricciones HTML

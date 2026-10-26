@@ -16,7 +16,7 @@
             <textarea {{ $attributes->except('id')->class(['form-control']) }} id="{{ $fieldId }}" name="{{ $name }}" rows="4" @required($required) @if($hasError) aria-invalid="true" @endif @if($describedBy) aria-describedby="{{ $describedBy }}" @endif>{{ $fieldValue }}</textarea>
         @elseif($type === 'select' || $multiple)
             <select {{ $attributes->except('id')->class(['form-control']) }} id="{{ $fieldId }}" name="{{ $name }}{{ $multiple ? '[]' : '' }}" @if($multiple) multiple @endif @required($required) @if($hasError) aria-invalid="true" @endif @if($describedBy) aria-describedby="{{ $describedBy }}" @endif>
-                @unless($multiple)<option value="">Selecciona una opción</option>@endunless
+                @if(!$multiple && !array_key_exists('', $options))<option value="">Selecciona una opción</option>@endif
                 @foreach($options as $optionValue => $optionLabel)<option value="{{ $optionValue }}" @selected(in_array((string) $optionValue, array_map('strval', (array) $fieldValue), true))>{{ $optionLabel }}</option>@endforeach
             </select>
         @elseif($type === 'password')

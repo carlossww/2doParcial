@@ -50,9 +50,11 @@ export function validateRelations(values) {
     const minutes = (value) => /^\d{2}:\d{2}$/.test(value || '') ? Number(value.slice(0, 2)) * 60 + Number(value.slice(3)) : null;
     const start = minutes(values.hora_inicio);
     const end = minutes(values.hora_fin);
+    const duration = Number(values.duracion_minutos ?? 30);
     if (start !== null && end !== null) {
         if (end <= start) errors.hora_fin = 'La hora de fin debe ser posterior a la hora de inicio.';
-        else if ((end - start) % 30 !== 0) errors.hora_fin = 'La franja debe contener bloques completos de 30 minutos.';
+        if (![15, 30, 45, 60].includes(duration)) errors.duracion_minutos = 'Selecciona una duración de 15, 30, 45 o 60 minutos.';
+        else if (end > start && (end - start) % duration !== 0) errors.hora_fin = `La franja debe contener bloques completos de ${duration} minutos.`;
     }
     for (const [from, to] of [['fecha_inicio', 'fecha_fin'], ['desde', 'hasta']]) {
         if (isValidDate(values[from] || '') && isValidDate(values[to] || '') && values[to] < values[from]) errors[to] = 'La fecha final no puede ser anterior a la inicial.';

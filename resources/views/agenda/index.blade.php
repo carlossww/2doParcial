@@ -1,15 +1,46 @@
 @extends('layouts.app')
-@section('title', 'Agenda médica')
+@section('title', $title)
 @section('content')
-    <x-page-heading title="Agenda médica" description="Organiza las citas y consulta su estado.">
-        @if(auth()->user()->hasPermission('citas.gestionar') || auth()->user()->hasPermission('citas.propias'))<a class="button button-primary" href="{{ route('agenda.create') }}"><x-icon name="plus" />Nueva cita</a>@endif
-    </x-page-heading>
-    <x-stats :items="$stats ?? []" />
-    <form class="filters" method="GET" action="{{ route('agenda.index') }}"><div class="filter-grid">
-        <x-field name="medico_id" label="Médico" type="select" :options="$doctors" :value="request('medico_id')" />
-        <x-field name="fecha" label="Fecha" type="date" :value="request('fecha')" />
-        <x-field name="estado" label="Estado" type="select" :options="['Programada' => 'Programada', 'Confirmada' => 'Confirmada', 'Cancelada' => 'Cancelada', 'Inasistencia' => 'Inasistencia', 'Atendida' => 'Atendida']" :value="request('estado')" />
-        <div class="filter-actions"><button class="button button-primary" type="submit"><x-icon name="search" />Filtrar</button><a class="button" href="{{ route('agenda.index') }}">Limpiar</a></div>
-    </div></form>
-    <div class="table-panel">@include('partials.appointments')</div>
+    <x-page-heading :title="$title" :description="$isHistory ? 'Historial de citas, incluidas las pasadas y canceladas.' : 'Consulta las citas por fecha y estado.'" :back="$backUrl" />
+    <form method="GET" action="{{ $filterUrl }}" class="filters">
+        <div class="filter-grid">
+            <x-field name="desde" label="Desde" type="date" :value="$filters['desde'] ?? null" />
+            <x-field name="hasta" label="Hasta" type="date" :value="$filters['hasta'] ?? null" />
+            @if($doctors !== null)
+                <x-field name="medico_id" label="Médico" type="select" :options="['' => 'Todos los médicos'] + $doctors" :value="$filters['medico_id'] ?? null" />
+            @endif
+            <x-field name="estado" label="Estado de cita" type="select" :options="['' => 'Todos los estados'] + $states" :value="$filters['estado'] ?? null" />
+            <div class="filter-actions">
+                <button type="submit" class="button button-primary"><x-icon name="search" />Filtrar</button>
+                <a class="button" href="{{ $filterUrl }}">Limpiar</a>
+            </div>
+        </div>
+    </form>
+    <p class="text-muted">{{ $rows->total() }} {{ $rows->total() === 1 ? 'cita encontrada' : 'citas encontradas' }}.</p>
+    <div class="table-panel">
+        @if($rows->count())
+            <div class="table-scroll" role="region" aria-label="{{ $title }}" tabindex="0">
+                <table>
+                    <caption class="sr-only">{{ $title }}</caption>
+                    <thead><tr><th scope="col">Código</th><th scope="col">Fecha y hora</th><th scope="col">{{ $isHistory ? 'Médico' : 'Paciente' }}</th><th scope="col">Especialidad</th><th scope="col">Estado</th><th scope="col">Registrada el</th>@if($showReason)<th scope="col">Motivo de consulta</th>@endif</tr></thead>
+                    <tbody>
+                        @foreach($rows as $row)
+                            <tr>
+                                <td>{{ $row->codigo }}</td>
+                                <td class="cell-date">{{ \App\Modules\Shared\Clinic::date($row->inicio)->format('d/m/Y H:i') }}–{{ \App\Modules\Shared\Clinic::date($row->fin)->format('H:i') }}</td>
+                                <td>{{ $isHistory ? $row->medico : $row->paciente }}@if(!$isHistory && $doctors !== null)<br><span class="text-muted">{{ $row->medico }}</span>@endif</td>
+                                <td>{{ $row->especialidad }}</td>
+                                <td><x-status :value="$row->estado" /></td>
+                                <td class="cell-date">{{ \App\Modules\Shared\Clinic::date($row->creada_en)->format('d/m/Y H:i') }}</td>
+                                @if($showReason)<td>{{ $row->motivo_consulta ?: '—' }}</td>@endif
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            {{ $rows->links('pagination.default') }}
+        @else
+            <x-empty-state title="Sin citas para mostrar" message="No hay citas que coincidan con los filtros seleccionados." icon="calendar" />
+        @endif
+    </div>
 @endsection

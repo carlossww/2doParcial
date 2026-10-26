@@ -44,16 +44,16 @@ class CatalogTest extends TestCase
         $this->assertDatabaseCount('paciente', $before);
     }
 
-    public function test_reception_can_read_specialties_but_cannot_create_them(): void
+    public function test_reception_can_read_and_create_specialties(): void
     {
         $this->seedVidaSalud();
 
         $this->actingAs($this->account('recepcion'))
             ->get(route('catalog.index', ['module' => 'especialidades']))->assertOk();
-        $this->post(route('catalog.store', ['module' => 'especialidades']), ['nombre' => 'No autorizada', 'activo' => '1'])
-            ->assertForbidden();
+        $this->post(route('catalog.store', ['module' => 'especialidades']), ['nombre' => 'Dermatología', 'activo' => '1'])
+            ->assertRedirect()->assertSessionHasNoErrors();
 
-        $this->assertDatabaseMissing('especialidad', ['nombre' => 'No autorizada']);
+        $this->assertDatabaseHas('especialidad', ['nombre' => 'Dermatología']);
     }
 
     public function test_admin_cannot_create_a_specialty_whose_normalized_name_exists(): void

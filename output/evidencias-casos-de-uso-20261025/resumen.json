@@ -1,0 +1,105 @@
+{
+  "fecha": "2026-10-25",
+  "aplicacion": "C:\\Users\\USUARIO\\Downloads\\1\\Sistema_Gestion_Clinica-main",
+  "fuente_pdf": "C:\\Users\\USUARIO\\Downloads\\2doparcial\\Vida Salud - Grupo 9 (3).pdf",
+  "matriz": {
+    "implementado_principal": [
+      "CU1",
+      "CU2",
+      "CU4",
+      "CU7",
+      "CU20"
+    ],
+    "parcial": [
+      "CU3",
+      "CU5",
+      "CU6",
+      "CU18"
+    ],
+    "sin_flujo_web": [
+      "CU8",
+      "CU9",
+      "CU10",
+      "CU11",
+      "CU12",
+      "CU13",
+      "CU14",
+      "CU15",
+      "CU16",
+      "CU17",
+      "CU19"
+    ]
+  },
+  "entorno_php": {
+    "APP_ENV": "testing",
+    "DB_CONNECTION": "pgsql",
+    "DB_HOST": "127.0.0.1",
+    "DB_PORT": 55432,
+    "DB_DATABASE": "Parcial2_test"
+  },
+  "phpunit_existente": {
+    "tests": 158,
+    "assertions": 692,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "time": 28.433191
+  },
+  "javascript_existente": {
+    "comando": "node --test tests/JavaScript/*.test.mjs",
+    "tests": 40,
+    "pass": 40,
+    "fail": 0,
+    "skipped": 0,
+    "duration_ms": 149.7029,
+    "evidencia": "Resultado de ejecuci?n observado en esta revisi?n"
+  },
+  "reproducciones_actuales": {
+    "tests": 4,
+    "assertions": 24,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "time": 1.669163
+  },
+  "nota": "Las reproducciones confirman comportamientos actuales, incluidos defectos; no son pruebas de correcci?n.",
+  "escenarios": [
+    {
+      "escenario": "CU18 búsqueda de horarios",
+      "base": "Parcial2_test",
+      "sin_filtro": 200,
+      "busqueda_por_hora": 200,
+      "busqueda_por_medico": 200,
+      "filas_al_buscar_medico_existente": 0
+    },
+    {
+      "escenario": "CU3 edición de cuenta de paciente sin cambiar sus datos",
+      "base": "Parcial2_test",
+      "estado_http": 302,
+      "vinculo_antes": true,
+      "vinculo_despues": false,
+      "verificacion_despues": false
+    },
+    {
+      "escenario": "Prerrequisito CU17 creación de cuenta de paciente desde Usuarios",
+      "base": "Parcial2_test",
+      "campo_vinculo_en_formulario": false,
+      "cuenta_creada": true,
+      "vinculo_verificado_creado": false
+    },
+    {
+      "escenario": "Rutas de módulos pendientes",
+      "base": "Parcial2_test",
+      "resultados": {
+        "/agenda": 404,
+        "/historia": 404,
+        "/atencion/1": 404,
+        "/laboratorio/ordenes": 404,
+        "/portal/reservar": 404,
+        "/reportes": 404
+      }
+    }
+  ],
+  "navegador_visual": false,
+  "base_operativa_modificada": false
+}

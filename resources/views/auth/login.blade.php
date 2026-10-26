@@ -13,6 +13,5 @@
             <x-field name="password" label="Contraseña" type="password" :required="true" autocomplete="current-password" />
             <button class="button button-primary button-full" type="submit" data-loading-text="Ingresando…">Ingresar</button>
         </form>
-        <p class="auth-link">¿Aún no tienes una cuenta? <a href="{{ route('register') }}">Solicitar registro</a></p>
     </section>
 @endsection

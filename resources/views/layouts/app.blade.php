@@ -20,7 +20,7 @@
                 @auth
                     <div class="header-actions">
                         <span class="user-name"><x-icon name="user" /> {{ auth()->user()->display_name }}</span>
-                        <form method="POST" action="{{ route('logout') }}">@csrf<button class="logout-button" type="submit"><x-icon name="logout" /><span>Cerrar sesión</span></button></form>
+                        <a class="logout-button" href="{{ route('logout.confirm') }}"><x-icon name="logout" /><span>Cerrar sesión</span></a>
                     </div>
                 @endauth
             </div>
